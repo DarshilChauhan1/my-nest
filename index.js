@@ -387,11 +387,9 @@ program
 
 
         case "MongoDB":
-          if (selectedOrm === "TypeORM") {
-            execSync(`cd ${projectName} && npm install @nestjs/mongoose mongoose --legacy-peer-deps`, { stdio: "inherit" });
-            fs.writeFileSync(path.join(process.cwd(), projectName, "src", "app.module.ts"), mongoDBBoilerPlate);
-            break;
-          }
+          execSync(`cd ${projectName} && npm install @nestjs/mongoose mongoose --legacy-peer-deps`, { stdio: "inherit" });
+          fs.writeFileSync(path.join(process.cwd(), projectName, "src", "app.module.ts"), mongoDBBoilerPlate);
+          break;
 
         case "MySQL":
           if (selectedOrm === "TypeORM") {
