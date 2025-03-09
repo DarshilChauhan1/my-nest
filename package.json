@@ -1,0 +1,26 @@
+{
+  "name": "nestjs-boiler-plate",
+  "version": "1.0.0",
+  "description": "NestJs Boiler Plate",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DarshilChauhan1/nestjs-cli-boiler-plate.git"
+  },
+  "author": "Darshil Chauhan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DarshilChauhan1/nestjs-cli-boiler-plate/issues"
+  },
+  "homepage": "https://github.com/DarshilChauhan1/nestjs-cli-boiler-plate#readme",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "inquirer": "^12.4.3",
+    "shelljs": "^0.9.1"
+  }
+}
