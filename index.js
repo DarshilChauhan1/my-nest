@@ -1,11 +1,13 @@
 #!/usr/bin/env node
-import { program } from "commander";
+import { Command } from 'commander'
 import { execSync } from "child_process";
 import chalk from "chalk";
 import inquirer from "inquirer";
 import fs from "fs";
 import path from "path";
+import ora from "ora";
 
+const program = new Command()
 
 const swaggerBoilerplate = `import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -159,6 +161,35 @@ export class JwtAuthGuard implements CanActivate {
         return true;
     }
 }`
+
+const passportJwtBoilerPlate = `
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { PassportStrategy } from '@nestjs/passport';
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor() {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: YOUR_SECRET_KEY,
+    });
+  }
+
+  async validate(payload: any) {
+    return { userId: payload.sub, username: payload.username };
+  }
+}
+`;
+
+const JwtPassportBoilerPlate = `
+import { Injectable } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {}
+`
 
 const globalCatchBoilerPlate = `import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { Request, response, Response } from 'express'
@@ -413,6 +444,25 @@ program
       switch (askJwtAuth.jwtAuth) {
         case "Passport":
           execSync(`cd ${projectName} && npm install @nestjs/passport passport passport-jwt @nestjs/jwt passport-local`, { stdio: "inherit" });
+
+          const moduleFiles = fs
+            .readdirSync(modulesPath)
+            .filter(file => file.endsWith(".module.ts"));
+          // user will select the module
+          const selectModule = await inquirer.prompt([
+            {
+              type: "list",
+              name: "Select Module",
+              message: "Select the module where you want to add the passport-jwt",
+              choices: moduleFiles
+            }
+          ])
+
+          if (selectModule) {
+            const moduleContent = fs.readFileSync(path.join(modulesPath, selectModule), "utf-8");
+            const updatedModuleContent = moduleContent.replace(/imports : \[\]/, `imports : [PassportModule.register({ defaultStrategy: 'jwt' })]`);
+            fs.writeFileSync(path.join(modulesPath, selectModule), updatedModuleContent);
+          }
           break;
         case "Custom":
           execSync(`cd ${projectName} && npm install @nestjs/jwt --legacy-peer-deps`, { stdio: "inherit" });
@@ -435,5 +485,6 @@ program
     fs.writeFileSync(path.join(process.cwd(), projectName, "src", "common", "interceptors", "response.interceptor.ts"), responseInterceptorBoilerPlate);
 
   });
+
 
 program.parse(process.argv);

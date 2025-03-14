@@ -1,15 +1,13 @@
 {
-  "name": "nestjs-boiler-plate",
-  "version": "1.0.0",
+  "name": "my-nest",
+  "version": "1.0.1",
   "description": "NestJS Boilerplate CLI to generate a structured NestJS project",
   "main": "index.js",
   "type": "module",
   "bin": {
     "my-nest": "index.js"
   },
-  "scripts": {
-   
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/DarshilChauhan1/nestjs-cli-boiler-plate.git"
@@ -24,6 +22,7 @@
     "chalk": "^5.4.1",
     "commander": "^13.1.0",
     "inquirer": "^12.4.3",
+    "ora": "^8.2.0",
     "shelljs": "^0.9.1"
   },
   "preferGlobal": true,
