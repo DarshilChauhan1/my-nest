@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { createProject } from '../commands/createProject.commands.js'
-import { createSwaggerConfig } from "../commands/createSwaggerConfig.js";
+import { createProject } from './commands/createProject.commands.js'
+import { createSwaggerConfig } from "./commands/createSwaggerConfig.js";
 
 const program = new Command();
 
