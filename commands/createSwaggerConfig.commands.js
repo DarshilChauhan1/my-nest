@@ -1,28 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 import { execPromise } from '../utils/execPromise.js';
-import ora from 'ora';
 import chalk from 'chalk';
 import { addSwaggerAnimation } from '../cliAnimations/animation.js';
 import { swaggerConfig, swaggerConfigExtra } from '../boilerPlates/configs/swagger.config.js';
+import { checkProjectForNestjs } from '../utils/checkNestjs.js';
 
 export const createSwaggerConfig = async () => {
-    const projectRoot = process.cwd();
-    const packageJsonPath = path.join(projectRoot, 'package.json');
-
-    if (!fs.existsSync(packageJsonPath)) {
-        console.log(chalk.red("❌ package.json not found. Make sure you are in a NestJS project."));
-        return;
-    }
-
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-
-    if (!((packageJson.dependencies && packageJson.dependencies['@nestjs/core']) ||
-        (packageJson.devDependencies && packageJson.devDependencies['@nestjs/core']))) {
-        console.log(chalk.red("❌ This is not a NestJS project. Make sure you are in the root directory."));
-        return;
-    }
-
+    const checkNest = checkProjectForNestjs();
+    if(!checkNest.success) return;
+    const { packageJson, projectRoot } = checkNest.data;
     const hasSwagger =
         (packageJson.dependencies && packageJson.dependencies['@nestjs/swagger']) ||
         (packageJson.devDependencies && packageJson.devDependencies['@nestjs/swagger']);

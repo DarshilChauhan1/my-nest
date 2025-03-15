@@ -1,11 +1,9 @@
 export const swaggerBoilerplate = `import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalInterceptors(new ResponseInterceptor())
   app.enableCors();
   app.setGlobalPrefix('api/v1');
 
@@ -28,12 +26,10 @@ export const swaggerWithGlobalCatchBoilerplate = `import { NestFactory } from '@
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { GlobalCatchHandler } from './common/filters/global-catch.filter';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new GlobalCatchHandler());
-  app.useGlobalInterceptors(new ResponseInterceptor())
   app.enableCors();
   app.setGlobalPrefix('api/v1');
 
