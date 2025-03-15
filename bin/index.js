@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { Command } from "commander";
-import { createProject } from './commands/createProject.commands.js'
-import { createSwaggerConfig } from "./commands/createSwaggerConfig.commands.js";
-import { createAuth } from "./commands/createAuth.comands.js";
+import { createProject } from '../commands/createProject.commands.js'
+import { createSwaggerConfig } from "../commands/createSwaggerConfig.commands.js";
+import { createAuth } from "../commands/createAuth.comands.js";
 
 const program = new Command();
 
