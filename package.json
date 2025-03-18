@@ -1,11 +1,11 @@
 {
   "name": "my-nest",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "NestJS Boilerplate CLI to generate a structured NestJS project",
   "main": "index.js",
   "type": "module",
   "bin": {
-    "my-nest": "index.js"
+    "my-nest": "bin/index.js"
   },
   "scripts": {},
   "repository": {
@@ -23,7 +23,8 @@
     "commander": "^13.1.0",
     "inquirer": "^12.4.3",
     "ora": "^8.2.0",
-    "shelljs": "^0.9.1"
+    "shelljs": "^0.9.1",
+    "ts-morph": "^25.0.1"
   },
   "preferGlobal": true,
   "keywords": [
