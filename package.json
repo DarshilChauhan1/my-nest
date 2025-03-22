@@ -1,6 +1,6 @@
 {
   "name": "my-nest",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "NestJS Boilerplate CLI to generate a structured NestJS project",
   "main": "index.js",
   "type": "module",
