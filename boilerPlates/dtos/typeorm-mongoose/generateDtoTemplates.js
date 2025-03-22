@@ -21,12 +21,12 @@ export const getDecorators = (name, type, useSwagger, askOptionalOrRequired) => 
     example: ${type === 'string' ? "'example string'" : type === 'number' ? "0" : "false"}
 })\n    ` : '';
 
-    if(askOptionalOrRequired == 'Optional') {
+    if (askOptionalOrRequired == 'Optional') {
         const addOptional = `@IsOptional()\n    `;
         return apiProperty + addOptional + decorators[type] || decorators.default;
     }
 
-    if(askOptionalOrRequired == 'Required') {
+    if (askOptionalOrRequired == 'Required') {
         const addRequired = `@IsNotEmpty()\n    `;
         return apiProperty + addRequired + decorators[type] || decorators.default;
     }

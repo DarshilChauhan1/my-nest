@@ -3,9 +3,14 @@ import * as fs from "fs";
 import * as path from "path";
 import inquirer from "inquirer";
 import chalk from "chalk";
-import { getDecorators, generateDtoTemplate, toPascalCase, VALID_FILE_NAME_REGEX } from "../utils/generateDtoTemplates.js";
+import { getDecorators, generateDtoTemplate, toPascalCase, VALID_FILE_NAME_REGEX } from "../boilerPlates/dtos/typeorm-mongoose/generateDtoTemplates.js";
+import { checkProjectForNestjs } from "../utils/checkNestjs.js";
 
 export const generateDto = async (moduleName, outputDir) => {
+    const checkNestJS = checkProjectForNestjs();
+    if (!checkNestJS.success) {
+        return;
+    }
     const { fileName: entityFileName } = await inquirer.prompt({
         name: "fileName",
         message: "Enter the entity file name :",
@@ -32,7 +37,7 @@ export const generateDto = async (moduleName, outputDir) => {
         choices : ['Optional', 'Required']
     })
 
-    const entityPath = path.join(process.cwd(), `src/${moduleName}/entities/${entityFileName}`);
+    const entityPath = path.join(process.cwd(), `src/${moduleName}/entities/${entityFileName}.entity.ts`);
 
     if (!fs.existsSync(entityPath)) {
         console.log(chalk.red("❌ Entity file does not exist! Please enter the full name of the file."));
@@ -51,13 +56,15 @@ export const generateDto = async (moduleName, outputDir) => {
     console.log(chalk.green(`✔ Found class: ${classDecl.getName()}`));
 
     let dtoProperties = "";
-    classDecl.getProperties().forEach((prop) => {
+    const classProperties = classDecl.getProperties();
+    for (let i =0; i < classProperties.length; i++) {
+        const prop = classProperties[i];
         const name = prop.getName();
         const type = prop.getType().getText();
+        if(name == 'id')  continue;
         const decorator = getDecorators(name, type, askSwagger, askOptionalOrRequired);
         dtoProperties += `  ${decorator}\n  ${name}: ${type};\n\n`;
-    });
-
+    }
     const dtoClassName = toPascalCase(saveFileName);
     const dtoTemplate = generateDtoTemplate(dtoClassName, dtoProperties);
 

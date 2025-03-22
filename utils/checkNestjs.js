@@ -18,7 +18,7 @@ export const checkProjectForNestjs = () => {
 
     if (!((packageJson.dependencies && packageJson.dependencies['@nestjs/core']) ||
         (packageJson.devDependencies && packageJson.devDependencies['@nestjs/core']))) {
-        console.log(chalk.red("❌ This is not a NestJS project. Make sure you are in the root directory."));
+        console.log(chalk.red("❌ This is not a NestJS project. Make sure you are in the root directory of Nestjs Project."));
         return {
             success: false
         }
