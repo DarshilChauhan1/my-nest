@@ -3,7 +3,7 @@ import { Command } from "commander";
 import { createProject } from '../commands/createProject.commands.js'
 import { createSwaggerConfig } from "../commands/createSwaggerConfig.commands.js";
 import { createAuth } from "../commands/createAuth.comands.js";
-import {generateDto} from "../commands/createDto.commands.js"
+import { generateDto } from "../commands/createDto.commands.js"
 import path from "path";
 import fs from "fs";
 

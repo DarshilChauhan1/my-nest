@@ -5,18 +5,20 @@ import chalk from 'chalk';
 import { addSwaggerAnimation } from '../cliAnimations/animation.js';
 import { swaggerConfig, swaggerConfigExtra } from '../boilerPlates/configs/swagger.config.js';
 import { checkProjectForNestjs } from '../utils/checkNestjs.js';
+import { giveNestjsCoreCompatibleSwagger } from '../utils/checkSwaggerVersion.js';
 
 export const createSwaggerConfig = async () => {
     const checkNest = checkProjectForNestjs();
-    if(!checkNest.success) return;
+    if (!checkNest.success) return;
     const { packageJson, projectRoot } = checkNest.data;
+    const version = giveNestjsCoreCompatibleSwagger();;
     const hasSwagger =
         (packageJson.dependencies && packageJson.dependencies['@nestjs/swagger']) ||
         (packageJson.devDependencies && packageJson.devDependencies['@nestjs/swagger']);
 
     if (!hasSwagger) {
         addSwaggerAnimation.start();
-        await execPromise(`npm install @nestjs/swagger@7 swagger-ui-express`, { 
+        await execPromise(`npm install @nestjs/swagger@${version} swagger-ui-express`, {
             stdio: ['ignore', 'pipe', 'pipe'],
             encoding: 'utf8'
         });

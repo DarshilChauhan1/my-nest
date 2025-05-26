@@ -4,6 +4,7 @@ import inquirer from "inquirer";
 import fs from "fs";
 import chalk from "chalk";
 import path from "path";
+import * as semver from 'semver';
 import { addGlobalCatchAnimation, additionDependenciesCliAnimation, addMongoDBAnimation, addSwaggerAnimation, mySQLTypeOrmAddAnimation, postgreSQLPrismaAddAnimation, postgreSqlTypeOrmAddAnimation, prismaMySQLAddAnimation } from "../cliAnimations/animation.js";
 import { mySQLTypeORMAppModuleBoilerPlate, postgreSQLTypeORMAppModuleBoilerPlate } from "../boilerPlates/orms/TypeORM/sqlBoilerPlate.typeorm.js";
 import { prismaMySQLBoilerPlate, prismaPostgreSQLBoilerPlate } from "../boilerPlates/orms/Prisma/sqlBoilerPlate.prisma.js";
@@ -14,6 +15,7 @@ import { responseInterceptorBoilerPlate } from "../boilerPlates/interceptors.js"
 import { responseHandlerBoilerPlate } from "../boilerPlates/responseHandler.js";
 import { mongoDBAppModuleBoilerPlate } from "../boilerPlates/orms/Mongoose/noSQL.boilerPlate.js";
 import { globalCatchMainBoilerPlate } from "../boilerPlates/globalCatchMain.js";
+import { giveNestjsCoreCompatibleSwagger } from "../utils/checkSwaggerVersion.js";
 
 
 const execPromise = promisify(exec);
@@ -45,6 +47,7 @@ export const createProject = async () => {
 
 
   let chooseOrm = null;
+
   if (answers.database === 'PostgreSQL' || answers.database === 'MySQL') {
     const selectOrm = await inquirer.prompt([
       {
@@ -87,7 +90,7 @@ export const createProject = async () => {
       if (chooseOrm == 'TypeORM') {
         try {
           postgreSqlTypeOrmAddAnimation.start()
-          await execPromise(`cd ${answers.projectName} && npm install @nestjs/typeorm typeorm pg`);
+          await execPromise(`cd ${answers.projectName} && nest add @nestjs/typeorm typeorm pg`, { stdio: "inherit" });
           fs.writeFileSync(path.join(process.cwd(), projectPath, "app.module.ts"), postgreSQLTypeORMAppModuleBoilerPlate);
           postgreSqlTypeOrmAddAnimation.succeed("PostgreSQL and Typeorm dependencies added successfully")
         } catch (error) {
@@ -113,7 +116,7 @@ export const createProject = async () => {
       if (chooseOrm == 'TypeORM') {
         try {
           mySQLTypeOrmAddAnimation.start()
-          await execPromise(`cd ${answers.projectName} && npm install @nestjs/typeorm typeorm mysql --legacy-peer-deps`, { stdio: "inherit" });
+          await execPromise(`cd ${answers.projectName} && nest add @nestjs/typeorm typeorm mysql`, { stdio: "inherit" });
           fs.writeFileSync(path.join(process.cwd(), projectPath, "app.module.ts"), mySQLTypeORMAppModuleBoilerPlate);
           mySQLTypeOrmAddAnimation.succeed("MySQL and Typeorm dependencies added successfully")
         } catch (error) {
@@ -138,20 +141,28 @@ export const createProject = async () => {
     case 'MongoDB':
       try {
         addMongoDBAnimation.start()
-        await execPromise(`cd ${answers.projectName} && npm install @nestjs/mongoose mongoose`, { stdio: "inherit" });
-        fs.writeFileSync(path.join(process.cwd(), projectPath, "app.module.ts"), mongoDBAppModuleBoilerPlate );
+        await execPromise(`cd ${answers.projectName} && nest add @nestjs/mongoose mongoose`, { stdio: "inherit" });
+        fs.writeFileSync(path.join(process.cwd(), projectPath, "app.module.ts"), mongoDBAppModuleBoilerPlate);
         addMongoDBAnimation.succeed("MongoDB dependencies added successfully")
       } catch (error) {
-        addMongoDBAnimation.fail("Failed to add MongoDB and Mongoose dependencies")  
+        addMongoDBAnimation.fail("Failed to add MongoDB and Mongoose dependencies")
       }
       break;
   }
 
   // Now for Add Swagger
+
   if (answers.addSwagger && !answers.addGlobalCatchHanlder) {
     try {
       addSwaggerAnimation.start()
-      await execPromise(`cd ${answers.projectName} && npm install @nestjs/swagger@7`, { stdio: "inherit" });
+      // first of all check for version compatibility
+      const swaggerVersion = giveNestjsCoreCompatibleSwagger();
+      if (!swaggerVersion) {
+        addSwaggerAnimation.fail("Failed to determine compatible Swagger version for your NestJS core version");
+        return;
+      }
+
+      await execPromise(`cd ${answers.projectName} && npm i @nestjs/swagger${swaggerVersion}`, { stdio: "inherit" });
       fs.writeFileSync(path.join(process.cwd(), projectPath, "main.ts"), swaggerBoilerplate);
       addSwaggerAnimation.succeed("Swagger dependencies added successfully")
     } catch (error) {
@@ -162,17 +173,24 @@ export const createProject = async () => {
   if (answers.addGlobalCatchHanlder && answers.addSwagger) {
     try {
       addGlobalCatchAnimation.start()
-      await execPromise(`cd ${answers.projectName} && npm install @nestjs/swagger@7`, { stdio: "inherit" });
+      const projectName = answers.projectName;
+      const swaggerVersion = giveNestjsCoreCompatibleSwagger(projectName);
+      if (!swaggerVersion) {
+        addSwaggerAnimation.fail("Failed to determine compatible Swagger version for your NestJS core version");
+        return;
+      }
+      await execPromise(`cd ${answers.projectName} && npm i  @nestjs/swagger@${swaggerVersion}`, { stdio: "inherit" });
       fs.writeFileSync(path.join(process.cwd(), projectPath, "main.ts"), swaggerWithGlobalCatchBoilerplate);
       fs.writeFileSync(path.join(process.cwd(), projectPath, "common", "utils", "response-handler.utils.ts"), responseHandlerBoilerPlate);
       fs.writeFileSync(path.join(process.cwd(), projectPath, "common", "filters", "global-catch.filter.ts"), globalCatchBoilerPlate);
       addGlobalCatchAnimation.succeed("Global Catch Handler and Swagger dependencies added successfully")
     } catch (error) {
+      console.log(error)
       addGlobalCatchAnimation.fail("Failed to add Global Catch Handler and Swagger dependencies")
     }
   }
 
-  if(answers.addGlobalCatchHanlder && !answers.addSwagger) {
+  if (answers.addGlobalCatchHanlder && !answers.addSwagger) {
     try {
       addGlobalCatchAnimation.start()
       fs.writeFileSync(path.join(process.cwd(), projectPath, "common", "utils", "response-handler.utils.ts"), responseHandlerBoilerPlate);

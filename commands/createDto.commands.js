@@ -62,6 +62,8 @@ export const generateDto = async (moduleName, outputDir) => {
         const name = prop.getName();
         const type = prop.getType().getText();
         if(name == 'id')  continue;
+        if(name == 'createdAt') continue;
+        if(name == 'updatedAt') continue;
         const decorator = getDecorators(name, type, askSwagger, askOptionalOrRequired);
         dtoProperties += `  ${decorator}\n  ${name}: ${type};\n\n`;
     }

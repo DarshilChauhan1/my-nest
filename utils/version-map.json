@@ -1,0 +1,34 @@
+{
+  "swagger": {
+    "5": {
+      "package": "@nestjs/swagger",
+      "version": "4.x",
+      "uiPackage": "swagger-ui-express",
+      "uiVersion": "2.x"
+    },
+    "6": {
+      "package": "@nestjs/swagger",
+      "version": "5.x",
+      "uiPackage": "swagger-ui-express",
+      "uiVersion": "3.x"
+    },
+    "7": {
+      "package": "@nestjs/swagger",
+      "version": "6.x",
+      "uiPackage": "swagger-ui-express",
+      "uiVersion": "4.x"
+    },
+    "10": {
+      "package": "@nestjs/swagger",
+      "version": "7.x",
+      "uiPackage": "swagger-ui-express",
+      "uiVersion": "4.x"
+    },
+    "11": {
+      "package": "@nestjs/swagger",
+      "version": "7.x",
+      "uiPackage": "swagger-ui-express",
+      "uiVersion": "5.x"
+    }
+  }
+}

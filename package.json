@@ -23,6 +23,7 @@
     "commander": "^13.1.0",
     "inquirer": "^12.4.3",
     "ora": "^8.2.0",
+    "semver": "^7.7.2",
     "shelljs": "^0.9.1",
     "ts-morph": "^25.0.1"
   },
